@@ -1,0 +1,26 @@
+{
+
+
+"token": "",
+
+"yelptoken": "",
+
+
+
+"NutrKey": "",
+"NutrID": "",
+"react_emoji": "🐙",
+
+"rankCheck": {
+
+    "enabled": true,
+
+    "roles": [
+
+        "React"
+
+    ]
+
+}
+
+}
