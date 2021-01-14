@@ -130,7 +130,7 @@ const data = JSON.stringify({
       let message  = FoodApi.message;
       msg.reply(message);
      }else{
-let message = ` ${FoodApi.foods[0].food_name} contain ${FoodApi.foods[0].nf_calories} calories per 1 serving at ${FoodApi.foods[0].serving_weight_grams} grams!`;
+let message = ` ${FoodApi.foods[0].food_name} contain ${FoodApi.foods[0].nf_calories} calories per 1 serving at ${FoodApi.foods[0].serving_weight_grams} grams! \n ${FoodApi.foods[0].photo.highres}`;
 msg.reply(message);
      }
       
@@ -196,7 +196,7 @@ const data = JSON.stringify({
       msg.reply(message);
     
      }else{
- let message = `If you did the exercise of ${exerapi.exercises[0].name} for ${exerapi.exercises[0].duration_min} minutes, you would burn ${exerapi.exercises[0].nf_calories} calories`;
+ let message = `If you did the exercise of ${exerapi.exercises[0].name} for ${exerapi.exercises[0].duration_min} minutes, you would burn ${exerapi.exercises[0].nf_calories} calories `;
  msg.reply(message);
  
      }
