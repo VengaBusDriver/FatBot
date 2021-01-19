@@ -80,7 +80,7 @@ client.on('message', msg => {
 
    case 5:
 
-   msg.react(config.react_emoji);
+   //msg.react(config.react_emoji);
 
        
 
@@ -130,7 +130,8 @@ const data = JSON.stringify({
       let message  = FoodApi.message;
       msg.reply(message);
      }else{
-let message = ` ${FoodApi.foods[0].food_name} contain ${FoodApi.foods[0].nf_calories} calories per 1 serving at ${FoodApi.foods[0].serving_weight_grams} grams! \n ${FoodApi.foods[0].photo.highres}`;
+       let pic =  FoodApi.foods[0].photo.highres ?? "No picture availabe";
+let message = ` ${FoodApi.foods[0].food_name} contain ${FoodApi.foods[0].nf_calories} calories per ${FoodApi.foods[0].serving_qty} serving(s) at ${FoodApi.foods[0].serving_weight_grams} grams! \n ` + pic ;
 msg.reply(message);
      }
       
@@ -237,7 +238,7 @@ const data = JSON.stringify({
             location: state ,
 
             limit:'50',
-            radius:'7000',
+            radius:'2000',
 
             categories: 'restaurants, All'
 
