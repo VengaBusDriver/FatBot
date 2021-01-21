@@ -130,7 +130,7 @@ const data = JSON.stringify({
       let message  = FoodApi.message;
       msg.reply(message);
      }else{
-       let pic =  FoodApi.foods[0].photo.highres ?? "No picture availabe";
+       let pic =  FoodApi.foods[0].photo.highres ?? "No picture available";
 let message = ` ${FoodApi.foods[0].food_name} contain ${FoodApi.foods[0].nf_calories} calories per ${FoodApi.foods[0].serving_qty} serving(s) at ${FoodApi.foods[0].serving_weight_grams} grams! \n ` + pic ;
 msg.reply(message);
      }
@@ -192,8 +192,8 @@ const data = JSON.stringify({
     //  process.stdout.write(d)
       let exerapi = JSON.parse(d)
      // console.log(exerapi);
-     if (res.statusCode == '404') {
-      let message  = exerapi.message;
+     if ((res.statusCode == '404') || (!exerapi.exercises.length)){
+      let message  = 'Thats not a real exercise you bitch';
       msg.reply(message);
     
      }else{
