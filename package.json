@@ -1,0 +1,33 @@
+{
+  "name": "fatbot",
+  "version": "1.0.0",
+  "description": "A Discord bot with nutrition, restaurant, and utility commands",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "nutrition",
+    "restaurant",
+    "yelp"
+  ],
+  "author": "Katix",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "yelp-fusion": "^3.0.0",
+    "nutritionix": "^0.6.1",
+    "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  }
+}
+
