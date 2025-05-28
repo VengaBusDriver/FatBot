@@ -53,10 +53,13 @@ class CommandHandler {
         if (content === '!CATFACT') {
             UtilityCommands.handleCatFactCommand(msg);
             return;
+        }        if (content.includes('!WEATHER')) {
+            UtilityCommands.handleWeatherCommand(msg, this.config);
+            return;
         }
 
-        if (content.includes('!WEATHER')) {
-            UtilityCommands.handleWeatherCommand(msg, this.config);
+        if (content === '!SLUR') {
+            UtilityCommands.handleQuoteCommand(msg);
             return;
         }
 

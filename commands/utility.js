@@ -57,6 +57,7 @@ Available commands:
 • !BAR <city, state> - Find a random bar near you  
 • !CBAR <city, state> - Find a cheap bar near you
 • !WEATHER <location> - Get current weather information for a location
+• !QUOTE - Get a random inspirational quote (posts to #quotes channel)
 • !CATFACT - Get a random cat fact
 • !8BALL <question> - Get a magic 8-ball response
 • !PING - Test bot responsiveness
@@ -98,15 +99,48 @@ Available commands:
                         `💨 **Wind:** ${current.wind_kph} km/h (${current.wind_mph} mph) ${current.wind_dir}\n` +
                         `💧 **Humidity:** ${current.humidity}%\n` +
                         `👁️ **Visibility:** ${current.vis_km} km (${current.vis_miles} miles)\n` +
-                        `🕒 **Local Time:** ${location.localtime}`;
-
-                    msg.reply(weatherMessage);
+                        `🕒 **Local Time:** ${location.localtime}`;                    msg.reply(weatherMessage);
                 } catch (parseError) {
                     console.error('Error parsing weather response:', parseError);
                     msg.reply("Sorry, couldn't parse weather information.");
                 }
             }
         });
+    }
+
+    static handleQuoteCommand(msg) {
+        // Try to find the quotes channel
+        const quotesChannel = msg.guild.channels.cache.find(channel => 
+            channel.name === 'the-list' && channel.type === 'text'
+        );
+        
+        if (!quotesChannel) {
+            return msg.reply("No the-list channel found! Please create a #quotes channel first.");
+        }
+
+        // Fetch messages from the quotes channel
+        quotesChannel.messages.fetch({ limit: 100 })
+            .then(messages => {
+                // Filter out bot messages and empty messages
+                const userMessages = messages.filter(message => 
+                    !message.author.bot && message.content.trim().length > 0
+                );
+                
+                if (userMessages.size === 0) {
+                    return msg.reply("No quotes found in the #quotes channel! Add some messages there first.");
+                }
+                
+                // Get a random message
+                const randomMessage = userMessages.random();
+                
+                // Format and send the quote
+                const quoteMessage = `💭 **Random Slur from #the-list**\n\n"${randomMessage.content}"\n\n*— ${randomMessage.author.username}* (${randomMessage.createdAt.toDateString()})`;
+                
+                msg.reply(quoteMessage);
+            })            .catch(error => {
+                console.error('Error fetching messages from quotes channel:', error);
+                msg.reply("Sorry, couldn't fetch quotes from the channel right now.");
+            });
     }
 }
 

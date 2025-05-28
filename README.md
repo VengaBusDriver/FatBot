@@ -32,6 +32,7 @@ FatBot/
 - `!8BALL <question>` - Get a magic 8-ball response
 - `!CATFACT` - Get a random cat fact
 - `!WEATHER <location>` - Get current weather information for a location
+- `!QUOTE` - Get a random inspirational quote (posts to #quotes channel if available)
 - `!HELP` - Show available commands
 - `!ROLL` - Roll a dice (ex. !ROLL 6)
 
