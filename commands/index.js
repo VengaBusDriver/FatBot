@@ -59,6 +59,11 @@ class CommandHandler {
         }
 
         if (content === '!SLUR') {
+            UtilityCommands.handleTheListCommand(msg);
+            return;
+        }
+
+        if (content === '!QUOTE') {
             UtilityCommands.handleQuoteCommand(msg);
             return;
         }

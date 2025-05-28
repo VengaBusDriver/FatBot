@@ -108,7 +108,7 @@ Available commands:
         });
     }
 
-    static handleQuoteCommand(msg) {
+    static handleTheListCommand(msg) {
         // Try to find the quotes channel
         const quotesChannel = msg.guild.channels.cache.find(channel => 
             channel.name === 'the-list' && channel.type === 'text'
@@ -135,6 +135,42 @@ Available commands:
                 
                 // Format and send the quote
                 const quoteMessage = `💭 **Random Slur from #the-list**\n\n"${randomMessage.content}"\n\n*— ${randomMessage.author.username}* (${randomMessage.createdAt.toDateString()})`;
+                
+                msg.reply(quoteMessage);
+            })            .catch(error => {
+                console.error('Error fetching messages from quotes channel:', error);
+                msg.reply("Sorry, couldn't fetch quotes from the channel right now.");
+            });
+    }
+
+
+      static handleQuoteCommand(msg) {
+        // Try to find the quotes channel
+        const quotesChannel = msg.guild.channels.cache.find(channel => 
+            channel.name === 'quotes' && channel.type === 'text'
+        );
+        
+        if (!quotesChannel) {
+            return msg.reply("No quotes channel found! Please create a #quotes channel first.");
+        }
+
+        // Fetch messages from the quotes channel
+        quotesChannel.messages.fetch({ limit: 100 })
+            .then(messages => {
+                // Filter out bot messages and empty messages
+                const userMessages = messages.filter(message => 
+                    !message.author.bot && message.content.trim().length > 0
+                );
+                
+                if (userMessages.size === 0) {
+                    return msg.reply("No quotes found in the #quotes channel! Add some messages there first.");
+                }
+                
+                // Get a random message
+                const randomMessage = userMessages.random();
+                
+                // Format and send the quote
+                const quoteMessage = `💭 **Random Quote from #Quotes**\n\n"${randomMessage.content}"\n\n*— ${randomMessage.author.username}* (${randomMessage.createdAt.toDateString()})`;
                 
                 msg.reply(quoteMessage);
             })            .catch(error => {
