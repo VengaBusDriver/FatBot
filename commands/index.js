@@ -54,6 +54,11 @@ class CommandHandler {
             return;
         }
 
+        if (content.includes('!ROLL')) {
+            UtilityCommands.handleRollCommand(msg);
+            return;
+        }
+
         if (content.includes('!HELP')) {
             UtilityCommands.handleHelpCommand(msg);
             return;

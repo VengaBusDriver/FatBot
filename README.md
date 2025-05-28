@@ -32,6 +32,7 @@ FatBot/
 - `!8BALL <question>` - Get a magic 8-ball response
 - `!CATFACT` - Get a random cat fact
 - `!HELP` - Show available commands
+- `!ROLL` - Roll a dice (ex. !ROLL 6)
 
 ## Setup
 

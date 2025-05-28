@@ -18,6 +18,19 @@ class UtilityCommands {
         msg.reply(responses[randomIndex]);
     }
 
+    static handleRollCommand(msg) {
+        // accept a roll command like !ROLL and number of sides, e.g., !ROLL 6
+        const rollCommand = msg.content.split(' ')[1];
+        const sides = parseInt(rollCommand, 10); 
+        if (isNaN(sides) || sides <= 0) {
+            msg.reply("Please provide a valid number of sides for the roll.");
+            return;
+        } else {
+            const rollResult = Math.floor(Math.random() * sides) + 1;
+            msg.reply(`You rolled a ${rollResult} on a ${sides}-sided die!`);
+        }  
+    }
+
     static handleCatFactCommand(msg) {
         request.get("https://catfact.ninja/fact", (error, response, body) => {
             if (error) {
@@ -48,6 +61,7 @@ Available commands:
 • !CATFACT - Get a random cat fact
 • !8BALL <question> - Get a magic 8-ball response
 • !PING - Test bot responsiveness
+• !ROLL - Roll a die with a specified number of sides (e.g., !ROLL 6)
 • !HELP - Show this help message
 \`\`\``;
         
