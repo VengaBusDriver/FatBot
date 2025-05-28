@@ -53,7 +53,9 @@ class CommandHandler {
         if (content === '!CATFACT') {
             UtilityCommands.handleCatFactCommand(msg);
             return;
-        }        if (content.includes('!WEATHER')) {
+        }        
+        
+        if (content.includes('!WEATHER')) {
             UtilityCommands.handleWeatherCommand(msg, this.config);
             return;
         }
@@ -75,6 +77,16 @@ class CommandHandler {
 
         if (content.includes('!HELP')) {
             UtilityCommands.handleHelpCommand(msg);
+            return;
+        }
+
+        if (content.includes('!URBAN') && !content.includes('!URBANRANDOM')) {
+            UtilityCommands.handleUrbanCommand(msg);
+            return;
+        }
+
+        if (content === '!URBANRANDOM') {
+            UtilityCommands.handleUrbanRandomCommand(msg);
             return;
         }
     }

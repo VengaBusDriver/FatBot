@@ -46,8 +46,7 @@ class UtilityCommands {
                 }
             }
         });
-    }    static handleHelpCommand(msg) {
-        const helpMessage = `\`\`\`
+    }    static handleHelpCommand(msg) {        const helpMessage = `\`\`\`
 +++ Welcome To Help +++
 
 Available commands:
@@ -58,6 +57,8 @@ Available commands:
 • !CBAR <city, state> - Find a cheap bar near you
 • !WEATHER <location> - Get current weather information for a location
 • !QUOTE - Get a random inspirational quote (posts to #quotes channel)
+• !URBAN <term> - Get Urban Dictionary definition for a term
+• !URBANRANDOM - Get a random Urban Dictionary definition
 • !CATFACT - Get a random cat fact
 • !8BALL <question> - Get a magic 8-ball response
 • !PING - Test bot responsiveness
@@ -177,6 +178,96 @@ Available commands:
                 console.error('Error fetching messages from quotes channel:', error);
                 msg.reply("Sorry, couldn't fetch quotes from the channel right now.");
             });
+    }
+
+    static handleUrbanCommand(msg) {
+        const term = msg.content.substring(7).trim(); // Remove "!URBAN " from command
+        
+        let apiUrl;
+        if (term) {
+            apiUrl = `https://api.urbandictionary.com/v0/define?term=${encodeURIComponent(term)}`;
+        } else {
+            return msg.reply("Please provide a term to look up. Example: !URBAN javascript");
+        }
+        
+        request.get(apiUrl, (error, response, body) => {
+            if (error) {
+                console.error('Urban Dictionary API error:', error);
+                msg.reply("Sorry, couldn't fetch definition right now.");
+                return;
+            }
+            
+            try {
+                const data = JSON.parse(body);
+                if (data.list && data.list.length > 0) {
+                    const definition = data.list[0];
+                    
+                    // Clean up and truncate long definitions
+                    let def = definition.definition.replace(/\[|\]/g, ''); // Remove brackets
+                    if (def.length > 400) {
+                        def = def.substring(0, 400) + "...";
+                    }
+                    
+                    let example = definition.example ? definition.example.replace(/\[|\]/g, '') : 'No example provided';
+                    if (example.length > 200) {
+                        example = example.substring(0, 200) + "...";
+                    }
+                    
+                    const urbanMessage = `📚 **${definition.word}**\n\n` +
+                        `**Definition:** ${def}\n\n` +
+                        `**Example:** ${example}\n\n`;
+                    
+                    msg.reply(urbanMessage);
+                } else {
+                    msg.reply(`No definition found for "${term}". Try a different term or check your spelling.`);
+                }
+            } catch (parseError) {
+                console.error('Error parsing Urban Dictionary response:', parseError);
+                msg.reply("Sorry, couldn't parse the definition.");
+            }
+        });
+    }
+
+    static handleUrbanRandomCommand(msg) {
+        const apiUrl = 'https://api.urbandictionary.com/v0/random';
+        
+        request.get(apiUrl, (error, response, body) => {
+            if (error) {
+                console.error('Urban Dictionary API error:', error);
+                msg.reply("Sorry, couldn't fetch a random definition right now.");
+                return;
+            }
+            
+            try {
+                const data = JSON.parse(body);
+                if (data.list && data.list.length > 0) {
+                    const definition = data.list[0];
+                    
+                    // Clean up and truncate long definitions
+                    let def = definition.definition.replace(/\[|\]/g, ''); // Remove brackets
+                    if (def.length > 400) {
+                        def = def.substring(0, 400) + "...";
+                    }
+                    
+                    let example = definition.example ? definition.example.replace(/\[|\]/g, '') : 'No example provided';
+                    if (example.length > 200) {
+                        example = example.substring(0, 200) + "...";
+                    }
+                    
+                    const urbanMessage = `🎲 **Random Urban Dictionary Definition**\n\n` +
+                        `📚 **${definition.word}**\n\n` +
+                        `**Definition:** ${def}\n\n` +
+                        `**Example:** ${example}\n\n`; 
+
+                    msg.reply(urbanMessage);
+                } else {
+                    msg.reply("Couldn't fetch a random definition right now. Try again later.");
+                }
+            } catch (parseError) {
+                console.error('Error parsing Urban Dictionary response:', parseError);
+                msg.reply("Sorry, couldn't parse the definition.");
+            }
+        });
     }
 }
 
