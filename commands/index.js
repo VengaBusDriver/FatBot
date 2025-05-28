@@ -4,6 +4,7 @@ const UtilityCommands = require('./utility');
 
 class CommandHandler {
     constructor(config) {
+        this.config = config;
         this.nutrition = new NutritionCommands(config);
         this.yelp = new YelpCommands(config);
     }
@@ -51,6 +52,11 @@ class CommandHandler {
 
         if (content === '!CATFACT') {
             UtilityCommands.handleCatFactCommand(msg);
+            return;
+        }
+
+        if (content.includes('!WEATHER')) {
+            UtilityCommands.handleWeatherCommand(msg, this.config);
             return;
         }
 

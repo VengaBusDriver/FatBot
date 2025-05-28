@@ -46,9 +46,7 @@ class UtilityCommands {
                 }
             }
         });
-    }
-
-    static handleHelpCommand(msg) {
+    }    static handleHelpCommand(msg) {
         const helpMessage = `\`\`\`
 +++ Welcome To Help +++
 
@@ -58,6 +56,7 @@ Available commands:
 • !YELP <city, state> - Find a random restaurant near you
 • !BAR <city, state> - Find a random bar near you  
 • !CBAR <city, state> - Find a cheap bar near you
+• !WEATHER <location> - Get current weather information for a location
 • !CATFACT - Get a random cat fact
 • !8BALL <question> - Get a magic 8-ball response
 • !PING - Test bot responsiveness
@@ -66,6 +65,48 @@ Available commands:
 \`\`\``;
         
         msg.reply(helpMessage);
+    }
+
+    static handleWeatherCommand(msg, config) {
+        const location = msg.content.substring(9).trim(); // Remove "!WEATHER " from the command
+        
+        if (!location) {
+            return msg.reply("Please provide a location. Example: !WEATHER New York");
+        }
+
+        const weatherUrl = `${config.WeatherAPIURL}?key=${config.WeatherAPIKey}&q=${encodeURIComponent(location)}&aqi=no`;
+
+        request.get(weatherUrl, (error, response, body) => {
+            if (error) {
+                console.error('Weather API error:', error);
+                msg.reply("Sorry, couldn't fetch weather information right now.");
+            } else {
+                try {
+                    const weatherData = JSON.parse(body);
+                    
+                    if (weatherData.error) {
+                        msg.reply(`Weather error: ${weatherData.error.message}`);
+                        return;
+                    }
+
+                    const current = weatherData.current;
+                    const location = weatherData.location;
+                    
+                    const weatherMessage = `🌤️ **Current Weather for ${location.name}, ${location.region}, ${location.country}**\n` +
+                        `🌡️ **Temperature:** ${current.temp_c}°C (${current.temp_f}°F)\n` +
+                        `☁️ **Condition:** ${current.condition.text}\n` +
+                        `💨 **Wind:** ${current.wind_kph} km/h (${current.wind_mph} mph) ${current.wind_dir}\n` +
+                        `💧 **Humidity:** ${current.humidity}%\n` +
+                        `👁️ **Visibility:** ${current.vis_km} km (${current.vis_miles} miles)\n` +
+                        `🕒 **Local Time:** ${location.localtime}`;
+
+                    msg.reply(weatherMessage);
+                } catch (parseError) {
+                    console.error('Error parsing weather response:', parseError);
+                    msg.reply("Sorry, couldn't parse weather information.");
+                }
+            }
+        });
     }
 }
 
