@@ -37,21 +37,19 @@ class CommandHandler {
         if (content.includes('!CBAR')) {
             await this.yelp.handleCheapBarCommand(msg);
             return;
-        }
-
-        // Utility commands
+        }        // Utility commands
         if (content === '!PING') {
-            UtilityCommands.handlePingCommand(msg);
+            UtilityCommands.handlePingCommand(msg, this.config);
             return;
         }
 
         if (content.includes('!8BALL')) {
-            UtilityCommands.handleEightBallCommand(msg);
+            UtilityCommands.handleEightBallCommand(msg, this.config);
             return;
         }
 
         if (content === '!CATFACT') {
-            UtilityCommands.handleCatFactCommand(msg);
+            UtilityCommands.handleCatFactCommand(msg, this.config);
             return;
         }        
         
@@ -61,32 +59,30 @@ class CommandHandler {
         }
 
         if (content === '!SLUR') {
-            UtilityCommands.handleTheListCommand(msg);
+            UtilityCommands.handleTheListCommand(msg, this.config);
             return;
         }
 
         if (content === '!QUOTE') {
-            UtilityCommands.handleQuoteCommand(msg);
+            UtilityCommands.handleQuoteCommand(msg, this.config);
             return;
         }
 
         if (content.includes('!ROLL')) {
-            UtilityCommands.handleRollCommand(msg);
+            UtilityCommands.handleRollCommand(msg, this.config);
             return;
         }
 
         if (content.includes('!HELP')) {
-            UtilityCommands.handleHelpCommand(msg);
+            UtilityCommands.handleHelpCommand(msg, this.config);
             return;
-        }
-
-        if (content.includes('!URBAN') && !content.includes('!URBANRANDOM')) {
-            UtilityCommands.handleUrbanCommand(msg);
+        }if (content.includes('!URBAN') && !content.includes('!URBANRANDOM')) {
+            UtilityCommands.handleUrbanCommand(msg, this.config);
             return;
         }
 
         if (content === '!URBANRANDOM') {
-            UtilityCommands.handleUrbanRandomCommand(msg);
+            UtilityCommands.handleUrbanRandomCommand(msg, this.config);
             return;
         }
     }

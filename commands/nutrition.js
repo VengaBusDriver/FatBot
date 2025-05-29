@@ -1,4 +1,5 @@
 const https = require('https');
+const UtilityCommands = require('./utility');
 
 class NutritionCommands {
     constructor(config) {
@@ -7,9 +8,8 @@ class NutritionCommands {
 
     async handleFoodCommand(msg) {
         const foodQuery = msg.content.substring(6).trim();
-        
-        if (foodQuery.length < 1) {
-            return msg.reply("Please provide a food item to search for.");
+          if (foodQuery.length < 1) {
+            return UtilityCommands.replyWithRareResponse(msg, "Please provide a food item to search for.", this.config);
         }
 
         try {
@@ -37,46 +37,42 @@ class NutritionCommands {
                     responseData += chunk;
                 });
 
-                res.on('end', () => {
-                    try {
+                res.on('end', () => {                    try {
                         const foodApi = JSON.parse(responseData);
                         
                         if (res.statusCode === 404) {
-                            msg.reply(foodApi.message || "Food not found.");
+                            UtilityCommands.replyWithRareResponse(msg, foodApi.message || "Food not found.", this.config);
                         } else if (foodApi.foods && foodApi.foods.length > 0) {
                             const food = foodApi.foods[0];
                             const pic = food.photo?.highres || "No picture available";
                             const message = `${food.food_name} contains ${food.nf_calories} calories per ${food.serving_qty} serving(s) at ${food.serving_weight_grams} grams!\n${pic}`;
-                            msg.reply(message);
+                            UtilityCommands.replyWithRareResponse(msg, message, this.config);
                         } else {
-                            msg.reply("No nutrition information found for that food.");
+                            UtilityCommands.replyWithRareResponse(msg, "No nutrition information found for that food.", this.config);
                         }
                     } catch (error) {
                         console.error('Error parsing food API response:', error);
-                        msg.reply("Sorry, there was an error processing the food information.");
+                        UtilityCommands.replyWithRareResponse(msg, "Sorry, there was an error processing the food information.", this.config);
                     }
                 });
-            });
-
-            req.on('error', error => {
+            });            req.on('error', error => {
                 console.error('Food API request error:', error);
-                msg.reply("Sorry, there was an error retrieving food information.");
+                UtilityCommands.replyWithRareResponse(msg, "Sorry, there was an error retrieving food information.", this.config);
             });
 
             req.write(data);
             req.end();
         } catch (error) {
             console.error('Food command error:', error);
-            msg.reply("Sorry, there was an error processing your request.");
+            UtilityCommands.replyWithRareResponse(msg, "Sorry, there was an error processing your request.", this.config);
         }
     }
 
     async handleExerciseCommand(msg) {
         const exerciseQuery = msg.content.substring(6).trim();
         const exerciseValues = exerciseQuery.split("|");
-        
-        if (exerciseValues.length !== 5) {
-            return msg.reply("Please format your question correctly: Exercise|Gender|Weight(kg)|Height(cm)|Age");
+          if (exerciseValues.length !== 5) {
+            return UtilityCommands.replyWithRareResponse(msg, "Please format your question correctly: Exercise|Gender|Weight(kg)|Height(cm)|Age", this.config);
         }
 
         try {
@@ -108,34 +104,31 @@ class NutritionCommands {
                     responseData += chunk;
                 });
 
-                res.on('end', () => {
-                    try {
+                res.on('end', () => {                    try {
                         const exerciseApi = JSON.parse(responseData);
                         
                         if (res.statusCode === 404 || !exerciseApi.exercises || exerciseApi.exercises.length === 0) {
-                            msg.reply("That's not a valid exercise. Please try again.");
+                            UtilityCommands.replyWithRareResponse(msg, "That's not a valid exercise. Please try again.", this.config);
                         } else {
                             const exercise = exerciseApi.exercises[0];
                             const message = `If you did ${exercise.name} for ${exercise.duration_min} minutes, you would burn ${exercise.nf_calories} calories.`;
-                            msg.reply(message);
+                            UtilityCommands.replyWithRareResponse(msg, message, this.config);
                         }
                     } catch (error) {
                         console.error('Error parsing exercise API response:', error);
-                        msg.reply("Sorry, there was an error processing the exercise information.");
+                        UtilityCommands.replyWithRareResponse(msg, "Sorry, there was an error processing the exercise information.", this.config);
                     }
                 });
-            });
-
-            req.on('error', error => {
+            });            req.on('error', error => {
                 console.error('Exercise API request error:', error);
-                msg.reply("Sorry, there was an error retrieving exercise information.");
+                UtilityCommands.replyWithRareResponse(msg, "Sorry, there was an error retrieving exercise information.", this.config);
             });
 
             req.write(data);
             req.end();
         } catch (error) {
             console.error('Exercise command error:', error);
-            msg.reply("Sorry, there was an error processing your request.");
+            UtilityCommands.replyWithRareResponse(msg, "Sorry, there was an error processing your request.", this.config);
         }
     }
 }

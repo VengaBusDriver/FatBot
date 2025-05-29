@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const config = require('./config.json');
 const CommandHandler = require('./commands');
+const UtilityCommands = require('./commands/utility');
 
 // Initialize Discord client
 const client = new Discord.Client();
@@ -30,14 +31,12 @@ client.on('message', async msg => {
     if (new Date().getDay() === 5) {
         // You can add Friday-specific reactions here
         // msg.react(config.react_emoji);
-    }
-
-    // Handle commands
+    }    // Handle commands
     try {
         await commandHandler.handleMessage(msg);
     } catch (error) {
         console.error('Error handling command:', error);
-        msg.reply('Sorry, there was an error processing your command.');
+        UtilityCommands.replyWithRareResponse(msg, 'Sorry, there was an error processing your command.', config);
     }
 });
 

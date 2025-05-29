@@ -1,11 +1,23 @@
 const request = require('request');
 
 class UtilityCommands {
-    static handlePingCommand(msg) {
-        msg.reply('Pong!');
+    // Utility function to add rare response to any message
+    static addRareResponse(message, config) {
+        if (Math.random() < 0.01 && config && config.rareResponse) {
+            return message + `\n${config.rareResponse}`;
+        }
+        return message;
     }
 
-    static handleEightBallCommand(msg) {
+    // Enhanced reply function that includes rare response logic
+    static replyWithRareResponse(msg, message, config) {
+        const finalMessage = this.addRareResponse(message, config);
+        msg.reply(finalMessage);
+    }    static handlePingCommand(msg, config) {
+        UtilityCommands.replyWithRareResponse(msg, 'Pong!', config);
+    }
+
+    static handleEightBallCommand(msg, config) {
         const responses = [
             'No!',
             'Outlook not so good!',
@@ -15,38 +27,35 @@ class UtilityCommands {
         ];
         
         const randomIndex = Math.floor(Math.random() * responses.length);
-        msg.reply(responses[randomIndex]);
-    }
-
-    static handleRollCommand(msg) {
+        UtilityCommands.replyWithRareResponse(msg, responses[randomIndex], config);
+    }    static handleRollCommand(msg, config) {
         // accept a roll command like !ROLL and number of sides, e.g., !ROLL 6
         const rollCommand = msg.content.split(' ')[1];
         const sides = parseInt(rollCommand, 10); 
         if (isNaN(sides) || sides <= 0) {
-            msg.reply("Please provide a valid number of sides for the roll.");
+            UtilityCommands.replyWithRareResponse(msg, "Please provide a valid number of sides for the roll.", config);
             return;
         } else {
             const rollResult = Math.floor(Math.random() * sides) + 1;
-            msg.reply(`You rolled a ${rollResult} on a ${sides}-sided die!`);
+            UtilityCommands.replyWithRareResponse(msg, `You rolled a ${rollResult} on a ${sides}-sided die!`, config);
         }  
-    }
-
-    static handleCatFactCommand(msg) {
+    }    static handleCatFactCommand(msg, config) {
         request.get("https://catfact.ninja/fact", (error, response, body) => {
             if (error) {
                 console.error('Cat fact API error:', error);
-                msg.reply("Sorry, couldn't fetch a cat fact right now.");
+                UtilityCommands.replyWithRareResponse(msg, "Sorry, couldn't fetch a cat fact right now.", config);
             } else {
                 try {
                     const catFact = JSON.parse(response.body);
-                    msg.reply(`Did you know: ${catFact.fact}`);
+                    UtilityCommands.replyWithRareResponse(msg, `Did you know: ${catFact.fact}`, config);
                 } catch (parseError) {
                     console.error('Error parsing cat fact response:', parseError);
-                    msg.reply("Sorry, couldn't fetch a cat fact right now.");
+                    UtilityCommands.replyWithRareResponse(msg, "Sorry, couldn't fetch a cat fact right now.", config);
                 }
             }
         });
-    }    static handleHelpCommand(msg) {        const helpMessage = `\`\`\`
+    }    static handleHelpCommand(msg, config) {
+        const helpMessage = `\`\`\`
 +++ Welcome To Help +++
 
 Available commands:
@@ -66,14 +75,13 @@ Available commands:
 • !HELP - Show this help message
 \`\`\``;
         
-        msg.reply(helpMessage);
+        UtilityCommands.replyWithRareResponse(msg, helpMessage, config);
     }
 
     static handleWeatherCommand(msg, config) {
         const location = msg.content.substring(9).trim(); // Remove "!WEATHER " from the command
-        
-        if (!location) {
-            return msg.reply("Please provide a location. Example: !WEATHER New York");
+          if (!location) {
+            return UtilityCommands.replyWithRareResponse(msg, "Please provide a location. Example: !WEATHER New York", config);
         }
 
         const weatherUrl = `${config.WeatherAPIURL}?key=${config.WeatherAPIKey}&q=${encodeURIComponent(location)}&aqi=no`;
@@ -81,13 +89,13 @@ Available commands:
         request.get(weatherUrl, (error, response, body) => {
             if (error) {
                 console.error('Weather API error:', error);
-                msg.reply("Sorry, couldn't fetch weather information right now.");
+                UtilityCommands.replyWithRareResponse(msg, "Sorry, couldn't fetch weather information right now.", config);
             } else {
                 try {
                     const weatherData = JSON.parse(body);
                     
                     if (weatherData.error) {
-                        msg.reply(`Weather error: ${weatherData.error.message}`);
+                        UtilityCommands.replyWithRareResponse(msg, `Weather error: ${weatherData.error.message}`, config);
                         return;
                     }
 
@@ -100,23 +108,22 @@ Available commands:
                         `💨 **Wind:** ${current.wind_kph} km/h (${current.wind_mph} mph) ${current.wind_dir}\n` +
                         `💧 **Humidity:** ${current.humidity}%\n` +
                         `👁️ **Visibility:** ${current.vis_km} km (${current.vis_miles} miles)\n` +
-                        `🕒 **Local Time:** ${location.localtime}`;                    msg.reply(weatherMessage);
-                } catch (parseError) {
+                        `🕒 **Local Time:** ${location.localtime}`;
+                    
+                    UtilityCommands.replyWithRareResponse(msg, weatherMessage, config);                } catch (parseError) {
                     console.error('Error parsing weather response:', parseError);
-                    msg.reply("Sorry, couldn't parse weather information.");
+                    UtilityCommands.replyWithRareResponse(msg, "Sorry, couldn't parse weather information.", config);
                 }
             }
         });
-    }
-
-    static handleTheListCommand(msg) {
+    }    static handleTheListCommand(msg, config) {
         // Try to find the quotes channel
         const quotesChannel = msg.guild.channels.cache.find(channel => 
             channel.name === 'the-list' && channel.type === 'text'
         );
         
         if (!quotesChannel) {
-            return msg.reply("No the-list channel found! Please create a #quotes channel first.");
+            return UtilityCommands.replyWithRareResponse(msg, "No the-list channel found! Please create a #quotes channel first.", config);
         }
 
         // Fetch messages from the quotes channel
@@ -128,7 +135,7 @@ Available commands:
                 );
                 
                 if (userMessages.size === 0) {
-                    return msg.reply("No quotes found in the #quotes channel! Add some messages there first.");
+                    return UtilityCommands.replyWithRareResponse(msg, "No quotes found in the #quotes channel! Add some messages there first.", config);
                 }
                 
                 // Get a random message
@@ -137,22 +144,20 @@ Available commands:
                 // Format and send the quote
                 const quoteMessage = `💭 **Random Slur from #the-list**\n\n"${randomMessage.content}"\n\n*— ${randomMessage.author.username}* (${randomMessage.createdAt.toDateString()})`;
                 
-                msg.reply(quoteMessage);
-            })            .catch(error => {
+                UtilityCommands.replyWithRareResponse(msg, quoteMessage, config);
+            })
+            .catch(error => {
                 console.error('Error fetching messages from quotes channel:', error);
-                msg.reply("Sorry, couldn't fetch quotes from the channel right now.");
+                UtilityCommands.replyWithRareResponse(msg, "Sorry, couldn't fetch quotes from the channel right now.", config);
             });
-    }
-
-
-      static handleQuoteCommand(msg) {
+    }    static handleQuoteCommand(msg, config) {
         // Try to find the quotes channel
         const quotesChannel = msg.guild.channels.cache.find(channel => 
             channel.name === 'quotes' && channel.type === 'text'
         );
         
         if (!quotesChannel) {
-            return msg.reply("No quotes channel found! Please create a #quotes channel first.");
+            return UtilityCommands.replyWithRareResponse(msg, "No quotes channel found! Please create a #quotes channel first.", config);
         }
 
         // Fetch messages from the quotes channel
@@ -164,7 +169,7 @@ Available commands:
                 );
                 
                 if (userMessages.size === 0) {
-                    return msg.reply("No quotes found in the #quotes channel! Add some messages there first.");
+                    return UtilityCommands.replyWithRareResponse(msg, "No quotes found in the #quotes channel! Add some messages there first.", config);
                 }
                 
                 // Get a random message
@@ -173,27 +178,25 @@ Available commands:
                 // Format and send the quote
                 const quoteMessage = `💭 **Random Quote from #Quotes**\n\n"${randomMessage.content}"\n\n*— ${randomMessage.author.username}* (${randomMessage.createdAt.toDateString()})`;
                 
-                msg.reply(quoteMessage);
-            })            .catch(error => {
+                UtilityCommands.replyWithRareResponse(msg, quoteMessage, config);
+            })
+            .catch(error => {
                 console.error('Error fetching messages from quotes channel:', error);
-                msg.reply("Sorry, couldn't fetch quotes from the channel right now.");
+                UtilityCommands.replyWithRareResponse(msg, "Sorry, couldn't fetch quotes from the channel right now.", config);
             });
-    }
-
-    static handleUrbanCommand(msg) {
+    }static handleUrbanCommand(msg, config) {
         const term = msg.content.substring(7).trim(); // Remove "!URBAN " from command
         
-        let apiUrl;
-        if (term) {
+        let apiUrl;        if (term) {
             apiUrl = `https://api.urbandictionary.com/v0/define?term=${encodeURIComponent(term)}`;
         } else {
-            return msg.reply("Please provide a term to look up. Example: !URBAN javascript");
+            return UtilityCommands.replyWithRareResponse(msg, "Please provide a term to look up. Example: !URBAN javascript", config);
         }
         
         request.get(apiUrl, (error, response, body) => {
             if (error) {
                 console.error('Urban Dictionary API error:', error);
-                msg.reply("Sorry, couldn't fetch definition right now.");
+                UtilityCommands.replyWithRareResponse(msg, "Sorry, couldn't fetch definition right now.", config);
                 return;
             }
             
@@ -217,24 +220,21 @@ Available commands:
                         `**Definition:** ${def}\n\n` +
                         `**Example:** ${example}\n\n`;
                     
-                    msg.reply(urbanMessage);
+                    UtilityCommands.replyWithRareResponse(msg, urbanMessage, config);
                 } else {
-                    msg.reply(`No definition found for "${term}". Try a different term or check your spelling.`);
+                    UtilityCommands.replyWithRareResponse(msg, `No definition found for "${term}". Try a different term or check your spelling.`, config);
                 }
             } catch (parseError) {
                 console.error('Error parsing Urban Dictionary response:', parseError);
-                msg.reply("Sorry, couldn't parse the definition.");
+                UtilityCommands.replyWithRareResponse(msg, "Sorry, couldn't parse the definition.", config);
             }
         });
-    }
-
-    static handleUrbanRandomCommand(msg) {
+    }    static handleUrbanRandomCommand(msg, config) {
         const apiUrl = 'https://api.urbandictionary.com/v0/random';
-        
-        request.get(apiUrl, (error, response, body) => {
+          request.get(apiUrl, (error, response, body) => {
             if (error) {
                 console.error('Urban Dictionary API error:', error);
-                msg.reply("Sorry, couldn't fetch a random definition right now.");
+                UtilityCommands.replyWithRareResponse(msg, "Sorry, couldn't fetch a random definition right now.", config);
                 return;
             }
             
@@ -259,13 +259,13 @@ Available commands:
                         `**Definition:** ${def}\n\n` +
                         `**Example:** ${example}\n\n`; 
 
-                    msg.reply(urbanMessage);
+                    UtilityCommands.replyWithRareResponse(msg, urbanMessage, config);
                 } else {
-                    msg.reply("Couldn't fetch a random definition right now. Try again later.");
+                    UtilityCommands.replyWithRareResponse(msg, "Couldn't fetch a random definition right now. Try again later.", config);
                 }
             } catch (parseError) {
                 console.error('Error parsing Urban Dictionary response:', parseError);
-                msg.reply("Sorry, couldn't parse the definition.");
+                UtilityCommands.replyWithRareResponse(msg, "Sorry, couldn't parse the definition.", config);
             }
         });
     }
